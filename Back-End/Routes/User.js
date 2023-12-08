@@ -2,7 +2,30 @@ const router = require("express").Router();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 router.post("/register", async (req, res) => {
-  const newUser = new User(req.body);
+  const { username, email } = req.body;
+
+  // Convertissez le nom d'utilisateur et l'email en minuscules
+  const lowerCaseUsername = username.toLowerCase();
+  const lowerCaseEmail = email.toLowerCase();
+
+  // Vérifiez si le nom d'utilisateur existe déjà
+  const usernameExists = await User.findOne({ username: lowerCaseUsername });
+  if (usernameExists) {
+    return res.status(400).json("Username is already in use");
+  }
+
+  // Vérifiez si l'email existe déjà
+  const emailExists = await User.findOne({ email: lowerCaseEmail });
+  if (emailExists) {
+    return res.status(400).json("Email is already in use");
+  }
+
+  // Créez un nouvel utilisateur si le nom d'utilisateur et l'email n'existent pas déjà
+  const newUser = new User({
+    username: lowerCaseUsername,
+    email: lowerCaseEmail,
+    password: req.body.password,
+  });
   console.log(req.body);
   const savedUser = await newUser.save();
   try {
@@ -11,18 +34,23 @@ router.post("/register", async (req, res) => {
     res.status(500).json("SERVER ERR");
   }
 });
+
 //Login
 router.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  // Convertissez le nom d'utilisateur et l'email en minuscules
+  const lowerCaseUsername = username.toLowerCase();
   const user = await User.findOne({
-    $or: [{ username: req.body.username }, { email: req.body.email }],
-    password: req.body.password,
+    $or: [{ username: lowerCaseUsername }],
+    password: password,
   });
 
   if (!user) {
     return res.status(401).json("Invalid credentials");
   }
 
-  const { password, ...others } = user._doc;
+  const { password: _, ...others } = user._doc;
   const accessToken = jwt.sign(
     {
       id: user._id,
