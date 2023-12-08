@@ -48,5 +48,36 @@ async function getEquipment(req, res, next) {
   res.equipment = equipment;
   next();
 }
+router.put("/equipement/:id", async (req, res) => {
+  try {
+    const updatedEquipement = await Equipement.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.status(200).json(updatedEquipement);
+  } catch (error) {
+    res.status(500).json("SERVER ERR");
+  }
+});
+router.put("/equipement/:id/ip/:ipId", async (req, res) => {
+  try {
+    const equipement = await Equipement.findById(req.params.id);
+    if (!equipement) {
+      return res.status(404).json("Equipement not found");
+    }
+
+    const ip = equipement.ipAddresses.id(req.params.ipId);
+    if (!ip) {
+      return res.status(404).json("IP address not found");
+    }
+
+    ip.set(req.body);
+    const savedEquipement = await equipement.save();
+    res.status(200).json(savedEquipement);
+  } catch (error) {
+    res.status(500).json("SERVER ERR");
+  }
+});
 
 module.exports = router;
