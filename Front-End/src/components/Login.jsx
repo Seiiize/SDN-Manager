@@ -66,7 +66,7 @@ const Login = ({ onLogin }) => {
     const user = { username, password };
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/users/login",
+        "https://sdn-manager.vercel.app:3000/api/users/login",
         user
       );
       localStorage.setItem("token", response.data.accessToken);
