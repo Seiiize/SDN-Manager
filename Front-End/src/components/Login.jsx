@@ -56,12 +56,11 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-const Login = () => {
+const Login = ({ onLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [shake, setShake] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const user = { username, password };
@@ -70,16 +69,15 @@ const Login = () => {
         "http://localhost:3000/api/users/login",
         user
       );
+      localStorage.setItem("token", response.data.accessToken);
       console.log(response.data);
+      onLogin();
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        // Déclenchez l'animation de secousse
         setShake(true);
         setTimeout(() => setShake(false), 500);
-        // Affichez un message d'erreur approprié
         setErrorMessage("Invalid credentials");
       } else {
-        // Gérez les autres types d'erreurs
         console.error(error);
       }
     }

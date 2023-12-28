@@ -68,7 +68,7 @@ const StyledLink = styled(Link)`
   }
 `;
 
-const Register = () => {
+const Register = ({ onRegister }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -90,17 +90,15 @@ const Register = () => {
         user
       );
       console.log(response.data);
-      // Redirigez vers la page de connexion seulement si l'inscription réussit
-      // window.location.replace("/login");
+
+      // Appeler onRegister après une inscription réussie
+      onRegister();
     } catch (error) {
       if (error.response && error.response.status === 400) {
-        // Déclenchez l'animation de secousse
         setShake(true);
         setTimeout(() => setShake(false), 500);
-        // Affichez un message d'erreur approprié
         setErrorMessage(error.response.data);
       } else {
-        // Gérez les autres types d'erreurs
         console.error(error);
       }
     }
