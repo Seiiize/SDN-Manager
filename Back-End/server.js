@@ -14,4 +14,4 @@ const userRouter = require("./Routes/User");
 app.use("/api/users", userRouter);
 const EquipementRouter = require("./Routes/Equipement");
 app.use("/api/Equipement", EquipementRouter);
-app.listen(3000, () => console.log("Server Started"));
+app.listen(3010, () => console.log("Server Started"));
